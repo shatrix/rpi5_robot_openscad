@@ -44,7 +44,7 @@ body_width_base = 150;
 body_depth_base = 151; 
 body_width_top = 200; 
 body_depth_top = 155;
-torso_height = 50; 
+torso_height = 60;      // Increased from 50mm
 wall_thickness = 1.6; 
 
 // Mecha Style Parameters (matching head design)
@@ -96,6 +96,26 @@ pos_batt_x = -(total_internal_w / 2) + ank_w + cw + compartment_sep + (batt_w / 
 
 
 // ==========================================
+// TEARDROP SHAPE (Support-Free Printing)
+// ==========================================
+
+// Teardrop 2D profile - point facing UP for no overhangs
+module teardrop_2d(d) {
+    r = d / 2;
+    union() {
+        circle(r=r, $fn=32);
+        rotate([0, 0, 45])
+        square([r, r], center=false);
+    }
+}
+
+// 3D teardrop hole for horizontal drilling
+module teardrop_hole(d, h) {
+    linear_extrude(h, center=true)
+    teardrop_2d(d);
+}
+
+// ==========================================
 // MECHA HULL MODULES
 // ==========================================
 
@@ -145,6 +165,36 @@ module mecha_hull_inner() {
         translate([0, 0, torso_height])
         linear_extrude(0.01)
         mecha_profile_2d(w_top, d_top, bevel_inner);
+    }
+}
+
+// Front chest vent panel - TEARDROP vents for support-free printing
+// Pyramid pattern: 7 bottom, 6 middle, 5 top (matches body trapezoid)
+module front_chest_vents() {
+    vent_size = 7;
+    vent_spacing = 12;
+    
+    // Position on front face, centered
+    y_pos = -body_depth_top/2 - 1;  // Front face (negative Y)
+    z_center = torso_height / 2 + 5;
+    
+    translate([0, y_pos, z_center])
+    rotate([90, 0, 0]) {
+        // Bottom row: 7 vents
+        for (ix = [-3 : 3]) {
+            translate([ix * vent_spacing, -vent_spacing, 0])
+            teardrop_hole(vent_size, 10);
+        }
+        // Middle row: 6 vents (offset by half spacing)
+        for (ix = [-2.5, -1.5, -0.5, 0.5, 1.5, 2.5]) {
+            translate([ix * vent_spacing, 0, 0])
+            teardrop_hole(vent_size, 10);
+        }
+        // Top row: 5 vents
+        for (ix = [-2 : 2]) {
+            translate([ix * vent_spacing, vent_spacing, 0])
+            teardrop_hole(vent_size, 10);
+        }
     }
 }
 
@@ -212,6 +262,7 @@ module body_shell_geometry() {
             bottom_interface_holes(); 
             side_arm_mounts_negative();
             dual_power_cutout();
+            front_chest_vents();  // Decorative front vents
         }
     }
 }

@@ -2,7 +2,7 @@
 
 A futuristic, angular robot design featuring a Raspberry Pi 5 head and modular body with mecha/sci-fi aesthetics. All parts are optimized for support-free FDM printing.
 
-## Project Overview
+## Assembly Overview
 
 ```
 ┌────────────────────────────────────┐
@@ -40,21 +40,21 @@ A futuristic, angular robot design featuring a Raspberry Pi 5 head and modular b
 
 ## Files
 
-| File | Description |
-|------|-------------|
-| `robot-head-mecha.scad` | Mecha-style robot head with RPi5 |
-| `robot-body-mecha.scad` | Mecha-style robot body with power |
-| `bottom_interface.scad` | Cutout pattern for motors base |
-| `robot-head-rpi.scad` | Original rounded head design |
-| `robot-body-rpi.scad` | Original rounded body design |
+| File | Part | Description |
+|------|------|-------------|
+| `robot-head-mecha.scad` | **HEAD** | Mecha-style robot head with RPi5 |
+| `robot-body-mecha.scad` | **BODY** | Mecha-style robot body with power |
+| `bottom_interface.scad` | **INTERFACE** | Cutout pattern for motors base |
+| `robot-head-rpi.scad` | HEAD | Original rounded head design |
+| `robot-body-rpi.scad` | BODY | Original rounded body design |
 
 ---
 
 ## Interfaces
 
-### Head ↔ Body Connection
+### HEAD ↔ BODY Connection
 
-The head's **bottom interface** connects to the body's **lid neck plate**.
+The **head's bottom** connects to the **body's lid** (neck plate).
 
 | Parameter | Value | Notes |
 |-----------|-------|-------|
@@ -63,25 +63,27 @@ The head's **bottom interface** connects to the body's **lid neck plate**.
 | Slot opening | 100 × 20 mm | Cable passthrough |
 | Mounting holes | 4× M3 | At corners (insert holes) |
 
-### Body ↔ Motors Base Connection
+### BODY ↔ MOTORS BASE Connection
 
-The body's **bottom interface** (`bottom_interface.scad`) is used as a **negative cutout** for the motors base STL.
+The **body's bottom** uses `bottom_interface.scad` as a **negative cutout** for the motors base STL.
 
 | Parameter | Value | Notes |
 |-----------|-------|-------|
 | Bolt spacing | 120 mm | 4 corners |
 | Hole diameter | 4.0 mm | Insert holes |
 | Cable hole | 20 mm diameter | Aligned to bottom edge |
-| Cable Y position | `-60 + 10 = -50 mm` | Bottom edge at bolt line |
 | Cutter height | 9 mm | Depth for STL subtraction |
 
 **Usage:** Import `bottom_interface.scad` and subtract from motors base STL.
 
 ---
 
-## Robot Head (robot-head-mecha.scad)
+# 🤖 HEAD - robot-head-mecha.scad
 
-### Quick Reference
+The robot head houses the RPi5, display, camera, speakers, and control buttons.
+
+## HEAD - Dimensions
+
 | Parameter | Value |
 |-----------|-------|
 | Overall Size | 190 × 125 × 125 mm |
@@ -90,73 +92,91 @@ The body's **bottom interface** (`bottom_interface.scad`) is used as a **negativ
 | Top Bevel | 18 mm |
 | Bottom Bevel | 30 mm |
 
-### Components
-- **RPi5 Compartment**: 58 × 30 × 89 mm, 60mm rail height
-- **Display**: 85.5 × 55.6 mm PCB, wedge rails
-- **Camera**: 25.4 × 25.4 mm slot, teardrop cutout
-- **Microphone**: 9.5 mm, teardrop cutout
-- **Speakers**: 40 × 33.6 × 17.8 mm (both sides), teardrop vents
-- **Buttons**: 6× 14.5 mm teardrop holes
-- **Magnets**: 4× 6.5 × 2.2 mm at corners
+## HEAD - Components
 
-### Support-Free Features
+| Component | Dimensions | Notes |
+|-----------|-----------|-------|
+| RPi5 Compartment | 58 × 30 × 89 mm | 60mm rail height |
+| Display | 85.5 × 55.6 mm PCB | Wedge rails |
+| Camera | 25.4 × 25.4 mm slot | Teardrop cutout |
+| Microphone | 9.5 mm diameter | Teardrop cutout |
+| Speakers | 40 × 33.6 × 17.8 mm | Both sides, teardrop vents |
+| Buttons | 6× 14.5 mm holes | Teardrop shape |
+| Magnets | 4× 6.5 × 2.2 mm | At corners |
+
+## HEAD - Support-Free Features
+
 - All holes use teardrop shapes (point up)
 - Camera holder has 45° chamfered bottom
 - RPi5 rails without top crossbar
 - Speaker rails without bottom layer
 - Flat top lid for upside-down printing
 
----
+## HEAD - Printing
 
-## Robot Body (robot-body-mecha.scad)
-
-### Quick Reference
-| Parameter | Value |
-|-----------|-------|
-| Base Size | 150 × 151 mm |
-| Top Size | 200 × 155 mm |
-| Height | 50 mm |
-| Wall Thickness | 1.6 mm |
-| Top Bevel | 16 mm |
-| Bottom Bevel | 24 mm |
-
-### Components
-- **Powerbank (Left)**: 37.5 × 80 × 25.5 mm, 13° tilt
-- **Battery (Right)**: 51 × 86 × 15 mm, 13° tilt
-- **Arm Mounts**: 48 mm diameter, both sides
-- **Magnets**: 4× 6.5 × 2.2 mm at corners
-
----
-
-## Printing Guide
-
-### Head
 | Part | Orientation | Support |
 |------|-------------|---------|
 | Base | Right-side up (neck on bed) | None |
 | Lid | Upside-down (flat top on bed) | None |
 
-### Body
+---
+
+# 📦 BODY - robot-body-mecha.scad
+
+The robot body holds dual power sources and provides arm mounting points.
+
+## BODY - Dimensions
+
+| Parameter | Value |
+|-----------|-------|
+| Base Size (bottom) | 150 × 151 mm |
+| Top Size | 200 × 155 mm |
+| Height | 60 mm |
+| Wall Thickness | 1.6 mm |
+| Top Bevel | 16 mm |
+| Bottom Bevel | 24 mm |
+
+## BODY - Components
+
+| Component | Dimensions | Notes |
+|-----------|-----------|-------|
+| Front Chest Vents | 7-6-5 pyramid | Teardrop shape |
+| Powerbank (Left) | 37.5 × 80 × 25.5 mm | 13° tilt |
+| Battery (Right) | 51 × 86 × 15 mm | 13° tilt |
+| Arm Mounts | 48 mm diameter | Both sides |
+| Magnets | 4× 6.5 × 2.2 mm | At corners |
+| Bottom Bolts | 120 mm spacing | 4 corners |
+
+## BODY - Printing
+
 | Part | Orientation | Support |
 |------|-------------|---------|
 | Shell | Right-side up (bottom on bed) | None |
-| Lid | Neck plate up | None |
+| Lid | Neck plate facing up | None |
 
 ---
 
 ## Customization
 
-### Bevel Sizes
+### HEAD - Bevel Sizes
 ```scad
-bevel_size = 18;        // Top corners (head)
-bevel_size_bottom = 30; // Bottom corners (head)
+// In robot-head-mecha.scad:
+bevel_size = 18;        // Top corners
+bevel_size_bottom = 30; // Bottom corners
 ```
 
-### Render Options
+### BODY - Bevel Sizes
+```scad
+// In robot-body-mecha.scad:
+bevel_size = 16;        // Top corners
+bevel_size_bottom = 24; // Bottom corners
+```
+
+### Render Options (both files)
 ```scad
 show_base = true;
 show_lid = true;
-show_mockups = true;
+show_mockups = true;  // HEAD only
 ```
 
 ---
