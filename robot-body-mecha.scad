@@ -20,6 +20,9 @@
 /* [Render Selection] */
 render_part = "ASSEMBLY_VIEW"; // [ASSEMBLY_VIEW, PRINT_BODY_SHELL, PRINT_TOP_LID]
 
+/* [Feature Toggles] */
+enable_arm_mounts = true;  // Enable/disable side arm mounts
+
 /* [Printing Tolerances] */
 tolerance = 0.2; 
 
@@ -239,8 +242,8 @@ module body_shell_geometry() {
                      mecha_hull_outer(); 
                 }
                 
-                // 3. Arm Mounts (Auto-tilted)
-                side_arm_mounts_positive();
+                // 3. Arm Mounts (Auto-tilted) - Optional
+                if (enable_arm_mounts) side_arm_mounts_positive();
                 
                 // 4. Dual Power Casing
                 intersection() {
@@ -260,7 +263,7 @@ module body_shell_geometry() {
         union() {
             lid_insert_holes_body();
             bottom_interface_holes(); 
-            side_arm_mounts_negative();
+            if (enable_arm_mounts) side_arm_mounts_negative();
             dual_power_cutout();
             front_chest_vents();  // Decorative front vents
         }
@@ -305,8 +308,13 @@ module dual_power_casing() {
                 translate([0, -cw, 10]) 
                     rounded_box(ank_w + 0.6, ank_d + 10, ank_h + 0.6 + 20, ank_corner_rad);
             }
-            translate([0, 0, -(ank_h + cw*2)/2 - 20])
-                 rounded_box(ank_w + cw*2, ank_d + cw + 10, 40, ank_corner_rad + cw);
+            // Support column - CUBES instead of rounded_box for support-free printing
+            hull() {
+                translate([0, 0, -(ank_h + cw*2)/2 - 5])
+                    cube([ank_w + cw*2, ank_d + cw + 10, 10], center=true);
+                translate([0, 0, -(ank_h + cw*2)/2 - 35])
+                    cube([ank_w/2, ank_d/2, 2], center=true);
+            }
         }
         
         // 2. Battery Box (Right)
@@ -316,8 +324,13 @@ module dual_power_casing() {
                 translate([0, -cw, 10]) 
                     rounded_box(batt_w + 0.6, batt_d + 10, batt_h + 0.6 + 20, batt_corner_rad);
             }
-            translate([0, 0, -(batt_h + cw*2)/2 - 20])
-                 rounded_box(batt_w + cw*2, batt_d + cw + 10, 40, batt_corner_rad + cw);
+            // Support column - CUBES instead of rounded_box for support-free printing
+            hull() {
+                translate([0, 0, -(batt_h + cw*2)/2 - 5])
+                    cube([batt_w + cw*2, batt_d + cw + 10, 10], center=true);
+                translate([0, 0, -(batt_h + cw*2)/2 - 35])
+                    cube([batt_w/2, batt_d/2, 2], center=true);
+            }
         }
     }
 }
