@@ -10,7 +10,7 @@ A futuristic, angular robot head designed to house a Raspberry Pi 5 and various 
 | Wall Thickness | 2.0 mm | Shell wall thickness |
 | Split Line | z = 48 mm | Lid/base separation height |
 | Top Bevel | 18 mm | Corner bevel at lid level |
-| Bottom Bevel | 28 mm | Corner bevel at base |
+| Bottom Bevel | 30 mm | Corner bevel at base |
 
 ---
 
@@ -22,10 +22,14 @@ A futuristic, angular robot head designed to house a Raspberry Pi 5 and various 
 - **Flat Top** - Designed for support-free upside-down lid printing
 - **Panel Lines** - Vertical accent grooves on front face
 
-### Printability
+### Support-Free Printing ✅
 - **Base Unit**: Print right-side up (neck interface on bed)
 - **Lid Unit**: Print upside-down (flat top on bed)
-- **No supports required** for standard printing
+- **No supports required** - All features optimized:
+  - Teardrop holes for camera, mic, buttons, speaker vents
+  - Chamfered camera holder bottom (45°)
+  - RPi5 rails without overhanging top bar
+  - Speaker rails without bottom layer (sit on floor)
 
 ---
 
@@ -39,7 +43,7 @@ A futuristic, angular robot head designed to house a Raspberry Pi 5 and various 
 | `head_d` | 125 mm | Total depth |
 | `wall` | 2.0 mm | Wall thickness |
 | `bevel_size` | 18 mm | Top corner bevel |
-| `bevel_size_bottom` | 28 mm | Bottom corner bevel |
+| `bevel_size_bottom` | 30 mm | Bottom corner bevel |
 | `cheek_taper` | 0.12 | Side taper ratio |
 
 ### Neck Interface (Bottom)
@@ -59,7 +63,6 @@ A futuristic, angular robot head designed to house a Raspberry Pi 5 and various 
 | `disp_pcb_h` | 55.6 mm | PCB height |
 | `disp_pcb_thick` | 7.0 mm | PCB + components thickness |
 | Screen cutout | 75 mm wide | Front face opening |
-| Rail height | floor_z to split_z | Wedge-shaped mounting rails |
 
 ### Raspberry Pi 5 Compartment (Back)
 | Parameter | Value | Notes |
@@ -67,9 +70,7 @@ A futuristic, angular robot head designed to house a Raspberry Pi 5 and various 
 | `rpi_w` | 58 mm | RPi5 width |
 | `rpi_thick` | 30 mm | RPi5 + clearance depth |
 | `rpi_h_actual` | 89 mm | RPi5 height |
-| Mount height | 60 mm | Rail frame height |
-| Holder depth | 40 mm | `rpi_thick + 10` |
-| Support block | 17.5 × 33 × 10.6 mm | Optional stability block |
+| Mount height | 60 mm | Side rails only (no top bar) |
 
 ### Camera (Front Center)
 | Parameter | Value | Notes |
@@ -78,24 +79,23 @@ A futuristic, angular robot head designed to house a Raspberry Pi 5 and various 
 | `cam_slot_h` | 25.4 mm | Camera module height |
 | `cam_lens_d` | 11.4 mm | Lens opening diameter |
 | `cam_depth` | 14 mm | Holder depth |
-| Position | Below screen | Hexagonal cutout |
+| Cutout shape | Teardrop | Support-free |
+| Holder bottom | 45° chamfer | Support-free |
 
 ### Microphone (Front Bottom)
 | Parameter | Value | Notes |
 |-----------|-------|-------|
 | `mic_d` | 9.5 mm | Microphone diameter |
-| `mic_holder_wall` | 1.0 mm | Holder ring thickness |
-| Holder length | 2 mm | Internal ring depth |
-| Position | Floor level | Bottom of front face |
+| Cutout shape | Teardrop | Support-free |
 
 ### Speakers (Both Sides)
 | Parameter | Value | Notes |
 |-----------|-------|-------|
-| `dual_spk_l` | 50 mm | Speaker length |
+| `dual_spk_l` | 40 mm | Speaker length |
 | `dual_spk_w` | 33.6 mm | Speaker width |
 | `dual_spk_d` | 17.8 mm | Speaker depth |
-| Rail height | 55 mm | `dual_spk_l + 5` |
-| Hex vents | 8 mm diameter | 6-sided vent pattern |
+| Rail height | 45 mm | Side rails only (no bottom) |
+| Vent shape | Teardrop | 8mm diameter, support-free |
 | Vent Z position | -25 mm | Centered on speakers |
 
 ### Push Buttons (Front Sides)
@@ -105,41 +105,29 @@ A futuristic, angular robot head designed to house a Raspberry Pi 5 and various 
 | Quantity | 6 total | 3 per side |
 | X spacing | ±60 mm | From center |
 | Z spacing | 18 mm | Between buttons |
-| Hole shape | Hexagonal | Mecha-style aesthetic |
+| Hole shape | Teardrop | Support-free |
 
 ### Magnets (Lid Attachment)
 | Parameter | Value | Notes |
 |-----------|-------|-------|
 | `mag_diam` | 6.5 mm | Magnet diameter |
 | `mag_height` | 2.2 mm | Magnet height |
-| `mag_cover_thick` | 0.6 mm | Cover layer if embedded |
 | Quantity | 4 | One per corner |
-| X position | head_w/2 - 14 = 81 mm | From center |
-| Y position | head_d/2 - 14 = 48.5 mm | From center |
-
-### Cable Access (Back)
-| Parameter | Value | Notes |
-|-----------|-------|-------|
-| Hole width | 14 mm | Teardrop shape |
-| Hole height | 24 mm | Vertical opening |
-| X position | 45 mm | Right of center |
-| Z position | 30 mm | Above floor |
+| Position | head_w/2 - 14 | From edge |
 
 ---
 
 ## Ventilation
 
 ### Top Vents (Lid)
-- Pattern: Hexagonal grid
-- Hex size: 6 mm diameter
-- Spacing: 8 mm
-- Coverage: Central area of lid top
-
-### Side Vents (Speaker Area)
-- Pattern: Hexagonal grid
+- Pattern: Hexagonal grid (7×5)
 - Hex size: 8 mm diameter
 - Spacing: 10 mm
-- Z position: -25 mm (aligned with speakers)
+
+### Side Vents (Speaker Area)
+- Pattern: Teardrop grid
+- Size: 8 mm diameter
+- Position: z = -25 mm (aligned with speakers)
 
 ---
 
@@ -147,18 +135,15 @@ A futuristic, angular robot head designed to house a Raspberry Pi 5 and various 
 
 | Module | Purpose |
 |--------|---------|
+| `teardrop_2d()` / `teardrop_hole()` | Support-free horizontal holes |
 | `mecha_hull_outer()` | Main angular shell geometry |
 | `mecha_hull_inner()` | Internal void shape |
-| `mecha_profile_2d()` | 2D octagonal profile |
 | `internal_rails()` | Display + RPi5 mounting rails |
-| `side_speaker_rails()` | Speaker mounting holders |
-| `camera_holder()` | Camera module mount |
-| `microphone_holder()` | Mic ring mount |
+| `side_speaker_rails()` | Speaker side rails (no bottom) |
+| `camera_holder()` | Camera mount (chamfered bottom) |
 | `corner_magnet_brackets()` | Magnet mount structures |
-| `neck_mount_holes()` | Bottom interface drills |
-| `panel_line_grooves()` | Decorative surface details |
-| `hex_vent_pattern_top()` | Lid ventilation |
-| `hex_vent_pattern_sides()` | Speaker ventilation |
+| `hex_vent_pattern_top()` | Lid ventilation (hex) |
+| `hex_vent_pattern_sides()` | Speaker ventilation (teardrop) |
 
 ---
 
@@ -193,3 +178,4 @@ embedded_magnets = false; // Magnet embedding mode
 - **Original**: `robot-head-rpi.scad` (Boxy rounded design)
 - **Current**: `robot-head-mecha.scad` (Angular mecha style)
 - All internal component positions preserved from original
+- **v2**: Support-free printing optimizations (teardrops, chamfers)

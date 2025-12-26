@@ -23,7 +23,7 @@ $fn = 80;
 render_mode = "full"; // [full, test_fit]
 
 show_base = true;
-show_lid = true; 
+show_lid = false; 
 show_mockups = true;
 embedded_magnets = false; 
 
@@ -40,7 +40,7 @@ corner_r_bot = 30;
 forward_rake = 0;       // Set to 0 for flat top (easier printing)
 cheek_taper = 0.12;     // Side taper ratio (0-1)
 bevel_size = 18;        // Corner bevel size at TOP (reduced to fit magnets)
-bevel_size_bottom = 28; // Corner bevel size at BOTTOM (can be larger)
+bevel_size_bottom = 30; // Corner bevel size at BOTTOM (can be larger)
 chin_angle = 20;        // Chin plate angle
 crown_height = 0;       // Disabled for flat top printing
 
@@ -63,7 +63,7 @@ rpi_h_actual = 89;
 rpi_lift = 0; 
 
 // Dual Speakers
-dual_spk_l = 50; 
+dual_spk_l = 40; 
 dual_spk_w = 33.6; 
 dual_spk_d = 17.8; 
 
@@ -117,6 +117,30 @@ cam_z_pos = mic_top_edge + min_gap + cam_holder_half_h;
 // 3. SCREEN POS
 screen_center_z = cam_z_pos + cam_slot_h/2 + 4 + disp_pcb_h/2;
 
+
+
+// ==========================================
+//          TEARDROP SHAPE (Support-Free Printing)
+// ==========================================
+
+// Teardrop 2D profile - point facing UP for no overhangs
+// Used for horizontal holes in vertical walls
+module teardrop_2d(d) {
+    r = d / 2;
+    union() {
+        circle(r=r, $fn=32);
+        // 45-degree triangle pointing up
+        rotate([0, 0, 45])
+        square([r, r], center=false);
+    }
+}
+
+// 3D teardrop hole for horizontal drilling
+module teardrop_hole(d, h) {
+    rotate([0, 0, 0])  // Point facing +Z (up when rotated to front)
+    linear_extrude(h, center=true)
+    teardrop_2d(d);
+}
 
 // ==========================================
 //          MECHA HULL MODULES
@@ -233,23 +257,23 @@ module hex_vent_pattern_top() {
     }
 }
 
-// Hexagonal vent pattern for sides - LARGER for better speaker sound
+// TEARDROP vent pattern for sides - Support-free printing
 module hex_vent_pattern_sides() {
-    hex_size = 8;      // Increased from 5mm to 8mm
-    hex_spacing = 10;  // Increased spacing for larger holes
+    vent_size = 8;      // Hole diameter
+    vent_spacing = 10;  // Spacing between holes
     
     // Z position: shifted down to align with speakers at floor_z
-    // Speakers are at floor_z + rail_h/2 ≈ -35mm from center
-    vent_z_center = -25;  // Shifted down from -5 to align with speakers
+    vent_z_center = -25;
     
     for (side = [-1, 1]) {
         translate([side * (head_w/2), 0, vent_z_center])
         rotate([0, 90, 0])
-        for (y = [-12 : hex_spacing * 1.73 : 12]) {
-            for (z = [-18 : hex_spacing * 1.5 : 18]) {
-                z_offset = (floor((y + 12) / (hex_spacing * 1.73)) % 2) * (hex_spacing * 0.75);
+        for (y = [-12 : vent_spacing * 1.73 : 12]) {
+            for (z = [-18 : vent_spacing * 1.5 : 18]) {
+                z_offset = (floor((y + 12) / (vent_spacing * 1.73)) % 2) * (vent_spacing * 0.75);
                 translate([z + z_offset, y, 0])
-                cylinder(d=hex_size, h=20, $fn=6, center=true);
+                rotate([0, 0, 90])  // Point facing up (+Z in local coords)
+                teardrop_hole(vent_size, 20);
             }
         }
     }
@@ -449,10 +473,12 @@ module internal_rails() {
     translate([0, rpi_center_y_global, holder_z_pos]) {
         difference() {
             union() {
+                // Side rails (no overhangs)
                 translate([-(outer_w/2 - 6), 0, 0]) cube([12, holder_depth_global, rpi_mount_height], center=true);
                 translate([(outer_w/2 - 6), 0, 0]) cube([12, holder_depth_global, rpi_mount_height], center=true);
+                // Bottom crossbar only (no top bar to avoid overhangs)
                 translate([0, 0, -rpi_mount_height/2 + 2.5]) cube([outer_w, holder_depth_global, 5], center=true);
-                translate([0, 0, rpi_mount_height/2 - 2.5]) cube([outer_w, holder_depth_global, 5], center=true);
+                // TOP BAR REMOVED - was causing overhang tips requiring support
             }
             translate([0, 0, 5]) cube([rpi_w + 0.6, rpi_thick + 0.6, rpi_mount_height + 10], center=true);
             translate([0, -10, 0]) cube([rpi_w - 23, 20, rpi_mount_height + 2], center=true);
@@ -488,17 +514,36 @@ module side_speaker_rails() {
                 cutout_w = w - 2 * lip_width; 
                 translate([-side * d/2, 0, 7.5]) cube([rail_wall*2 + 2, cutout_w, rail_h + 5], center=true); 
             }
-            translate([0, 0, -rail_h/2 + 1]) cube([d, w + 2*rail_wall, 2], center=true);
+            // BOTTOM LAYER REMOVED - speakers sit directly on the floor
         }
     }
 }
 
 module camera_holder() {
-    holder_depth = cam_depth; slot_depth = 2; 
+    holder_depth = cam_depth; 
+    slot_depth = 2;
+    holder_w = cam_slot_w + 6;  // 31.4mm
+    holder_h = cam_slot_h + 4 + 2;  // 31.4mm
+    chamfer = 5;  // 45° chamfer size at bottom corners
+    
     translate([0, head_d/2 - wall, cam_z_pos]) {
         difference() {
-            translate([0, -holder_depth/2 + 0.1, -cam_slot_h/2 + cam_slot_h/2 - 1]) cube([cam_slot_w + 6, holder_depth, cam_slot_h + 4 + 2], center=true);
-            translate([0, -holder_depth/2 + 0.1 + slot_depth, 3]) cube([cam_slot_w, holder_depth, cam_slot_h + 10], center=true);
+            // Main body with chamfered bottom corners for support-free printing
+            hull() {
+                // Top portion (full width, full height minus chamfer)
+                translate([0, -holder_depth/2 + 0.1, 0]) 
+                    cube([holder_w, holder_depth, holder_h - chamfer], center=true);
+                // Bottom left chamfer point
+                translate([-(holder_w/2 - chamfer/2), -holder_depth/2 + 0.1, -(holder_h/2) + chamfer/2]) 
+                    cube([chamfer, holder_depth, chamfer], center=true);
+                // Bottom right chamfer point
+                translate([(holder_w/2 - chamfer/2), -holder_depth/2 + 0.1, -(holder_h/2) + chamfer/2]) 
+                    cube([chamfer, holder_depth, chamfer], center=true);
+            }
+            // Camera slot (internal dimensions unchanged)
+            translate([0, -holder_depth/2 + 0.1 + slot_depth, 3]) 
+                cube([cam_slot_w, holder_depth, cam_slot_h + 10], center=true);
+            // Lens hole
             rotate([90,0,0]) cylinder(d=cam_lens_d+2, h=20, center=true);
         }
     }
@@ -582,30 +627,33 @@ module base_unit() {
         translate([0, head_d / 2 - wall * 2, screen_cutout_z]) 
             cube([75, 20, screen_cutout_h], center = true);
         
-        // Camera cutout (hexagonal for mecha look)
+        // Camera cutout (TEARDROP for support-free printing)
         translate([0, head_d / 2 - wall + 1, cam_z_pos]) 
-            rotate([90,0,0]) 
-            cylinder(d=cam_lens_d + 4, h=10, center=true, $fn=6);
+            rotate([90, 0, 0]) 
+            teardrop_hole(cam_lens_d + 4, 10);
         
-        // Mic cutout
+        // Mic cutout (TEARDROP for support-free printing)
         translate([0, head_d / 2 - wall + 1, mic_z_pos]) 
-            rotate([90,0,0]) 
-            cylinder(d=mic_d, h=20, center=true);
+            rotate([90, 0, 0]) 
+            teardrop_hole(mic_d, 20);
 
-        // Side vents (hex pattern)
+        // Side vents (teardrop pattern)
         hex_vent_pattern_sides();
         
         // Neck mount
         neck_mount_holes();
         translate([0,0, -head_h/2 - 50]) cube([500,500,100], center=true);
         
-        // Push Button Holes (Angular/Hex for mecha style)
+        // Push Button Holes (TEARDROP - same as original design)
         for(side_x = [-1, 1]) {
             for(i = [0:2]) {
                 z_btn = screen_center_z - 10 - (i * 18); 
                 translate([side_x * 60, head_d/2, z_btn]) 
                     rotate([90, 0, 0]) 
-                    cylinder(d=pb_main_dia, h=20, center=true, $fn=6);
+                    hull() {
+                        cylinder(d=pb_main_dia, h=20, center=true);
+                        translate([0, pb_main_dia/2 + 2, 0]) cube([0.1, 0.1, 20], center=true); // Teardrop point
+                    }
             }
         }
     }
