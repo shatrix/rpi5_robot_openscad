@@ -144,7 +144,7 @@ The robot body holds dual power sources and provides arm mounting points.
 | Powerbank (Left) | 37.5 × 80 × 25.5 mm | 13° tilt |
 | Battery (Right) | 51 × 86 × 15 mm | 13° tilt |
 | Arm Mounts | 48 mm diameter | Both sides |
-| Magnets | 4× 6.5 × 2.2 mm | At corners |
+| Lid Screws | 4× M3 | At corners (replaces magnets) |
 | Bottom Bolts | 120 mm spacing | 4 corners |
 
 ## BODY - Printing

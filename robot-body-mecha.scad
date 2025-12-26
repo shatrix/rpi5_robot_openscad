@@ -235,7 +235,7 @@ module body_shell_geometry() {
                 
                 // 2. Corner Brackets
                 intersection() {
-                     corner_magnet_brackets();
+                     corner_mount_brackets();
                      mecha_hull_outer(); 
                 }
                 
@@ -258,7 +258,7 @@ module body_shell_geometry() {
 
         // --- DRILLS ---
         union() {
-            magnet_cutouts_body();
+            lid_insert_holes_body();
             bottom_interface_holes(); 
             side_arm_mounts_negative();
             dual_power_cutout();
@@ -277,8 +277,11 @@ module top_lid_geometry() {
                     cube([500,500, lid_thickness], center=true);
             }
             translate([0,0,split_z]) neck_plate_shape();
+            
+            // Reinforcement pads around screw holes
+            lid_screw_reinforcement();
         }
-        magnet_cutouts_lid();
+        lid_screw_holes();
         translate([0,0,split_z - 1]) neck_interface_drills();
     }
 }
@@ -383,10 +386,10 @@ module neck_interface_drills() {
 }
 
 // ==========================================
-//          MAGNETS & MOUNTS (UNCHANGED POSITIONS)
+//          LID MOUNTING (M3 SCREWS - replaced magnets)
 // ==========================================
 
-module corner_magnet_brackets() {
+module corner_mount_brackets() {
     x_pos = body_width_top / 2 - 14;
     y_pos = body_depth_top / 2 - 14;
     anchor_mid_drop = 12; 
@@ -401,21 +404,39 @@ module corner_magnet_brackets() {
     }
 }
 
-module magnet_cutouts_body() {
+// M3 insert holes in body base (4.0mm for heat-set inserts)
+module lid_insert_holes_body() {
     x_pos = body_width_top / 2 - 14;
     y_pos = body_depth_top / 2 - 14;
+    insert_depth = 8;  // Depth for M3 heat-set insert
+    
     for (x = [-1, 1]) for (y = [-1, 1]) {
-        translate([x * x_pos, y * y_pos, split_z - magnet_thick]) 
-            cylinder(d = magnet_dia, h = magnet_thick + 5); 
+        translate([x * x_pos, y * y_pos, split_z - insert_depth]) 
+            cylinder(d = insert_hole_dia, h = insert_depth + 1); 
     }
 }
 
-module magnet_cutouts_lid() {
+// M3 screw clearance holes in lid (3.4mm for M3 screws)
+module lid_screw_holes() {
     x_pos = body_width_top / 2 - 14;
     y_pos = body_depth_top / 2 - 14;
+    
     for (x = [-1, 1]) for (y = [-1, 1]) {
-        translate([x * x_pos, y * y_pos, split_z - 0.01]) 
-            cylinder(d = magnet_dia, h = magnet_thick + 0.01); 
+        translate([x * x_pos, y * y_pos, split_z - 1]) 
+            cylinder(d = screw_hole_dia, h = lid_thickness + 10); 
+    }
+}
+
+// Reinforcement pads around lid screw holes (on top of lid)
+module lid_screw_reinforcement() {
+    x_pos = body_width_top / 2 - 14;
+    y_pos = body_depth_top / 2 - 14;
+    pad_dia = screw_hole_dia + 8;  // 8mm larger than hole
+    pad_h = 3;  // Height of reinforcement boss
+    
+    for (x = [-1, 1]) for (y = [-1, 1]) {
+        translate([x * x_pos, y * y_pos, split_z + lid_thickness]) 
+            cylinder(d = pad_dia, h = pad_h); 
     }
 }
 
