@@ -42,7 +42,7 @@ magnet_thick = 2.2;
 /* [Body Dimensions] */
 body_width_base = 150; 
 body_depth_base = 151; 
-body_width_top = 200; 
+body_width_top = 190; 
 body_depth_top = 155;
 torso_height = 60;      // Increased from 50mm
 wall_thickness = 1.6; 
