@@ -65,7 +65,7 @@ rpi_lift = 0;
 // Dual Speakers
 dual_spk_l = 40; 
 dual_spk_w = 33.6; 
-dual_spk_d = 17.8; 
+dual_spk_d = 21;  // Increased from 17.8 to compensate for mecha hull taper 
 
 // Camera Settings
 cam_slot_w = 25.4; 
