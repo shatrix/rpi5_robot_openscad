@@ -1,5 +1,7 @@
 # Mecha-Style Robot - OpenSCAD Design
 
+> 🔗 **This repository contains the 3D printable designs (OpenSCAD sources, STL, and 3MF files) for the [RPi5 AI Robot Project](https://github.com/shatrix/rpi5-rpios-ai-robot).**
+
 A futuristic, angular robot design featuring a Raspberry Pi 5 head and modular body with mecha/sci-fi aesthetics. All parts are optimized for support-free FDM printing.
 
 ## Assembly Overview
